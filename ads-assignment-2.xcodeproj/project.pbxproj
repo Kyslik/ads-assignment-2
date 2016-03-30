@@ -10,6 +10,7 @@
 		502E3CE31CA9513300978A1A /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 502E3CE21CA9513300978A1A /* main.cpp */; };
 		502E3CEB1CA952DD00978A1A /* input.txt in Copy Files (2 items) */ = {isa = PBXBuildFile; fileRef = 502E3CE91CA952BD00978A1A /* input.txt */; };
 		502E3CED1CA9865800978A1A /* input-min.txt in Copy Files (2 items) */ = {isa = PBXBuildFile; fileRef = 502E3CEC1CA984D400978A1A /* input-min.txt */; };
+		5092B5461CAA095300C7AA0D /* data-known-optimal.txt in Copy Files (2 items) */ = {isa = PBXBuildFile; fileRef = 5092B5451CAA092300C7AA0D /* data-known-optimal.txt */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -19,6 +20,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 16;
 			files = (
+				5092B5461CAA095300C7AA0D /* data-known-optimal.txt in Copy Files (2 items) */,
 				502E3CED1CA9865800978A1A /* input-min.txt in Copy Files (2 items) */,
 				502E3CEB1CA952DD00978A1A /* input.txt in Copy Files (2 items) */,
 			);
@@ -32,6 +34,7 @@
 		502E3CE21CA9513300978A1A /* main.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		502E3CE91CA952BD00978A1A /* input.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = input.txt; path = "ads-assignment-2/data/input.txt"; sourceTree = "<group>"; };
 		502E3CEC1CA984D400978A1A /* input-min.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "input-min.txt"; sourceTree = "<group>"; };
+		5092B5451CAA092300C7AA0D /* data-known-optimal.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "data-known-optimal.txt"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -75,6 +78,7 @@
 			children = (
 				502E3CE91CA952BD00978A1A /* input.txt */,
 				502E3CEC1CA984D400978A1A /* input-min.txt */,
+				5092B5451CAA092300C7AA0D /* data-known-optimal.txt */,
 			);
 			name = data;
 			sourceTree = "<group>";
@@ -254,6 +258,7 @@
 				502E3CE81CA9513300978A1A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
