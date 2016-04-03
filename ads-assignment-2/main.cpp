@@ -50,13 +50,11 @@ int main(int argc, const char * argv[])
     {
         mat_size = atoi(argv[1]);
         if (mat_size > 30 || 0 >= mat_size) return -1;
-
         oneDMat submat;
-
         readMatrix(mat, mat_size);
         submat = new vector<unsigned short>((1 << mat_size) * mat_size, SHRT_MAX);
-        subMatrix(submat, mat);
 
+        subMatrix(submat, mat);
         cycle = minC(submat, mat);
     }
     else
