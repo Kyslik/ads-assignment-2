@@ -25,23 +25,26 @@ typedef list<int> Cycle;
 inline bool fileExists (const string& file_name);
 bool readMatrix(Matrix &m, const short size, const string &file_name = MATRIX_FILE);
 void subMatrix(oneDMat submat, const Matrix &mat);
+void displayCycle(const Matrix &mat, Cycle cycle);
+int countCycle(const Matrix &mat, Cycle cycle);
+
 Cycle minC(oneDMat submat, const Matrix &mat);
 Cycle greedIt(const Matrix &mat);
 Cycle swapCities(const Cycle &cycle, const int &a, const int &b);
-Cycle twoOpt(const Matrix &mat, Cycle cycle);
-void displayCycle(const Matrix &mat, Cycle cycle);
-int countCycle(const Matrix &mat, Cycle cycle);
+Cycle twoOptAllowNeg(const Matrix &mat, Cycle cycle, int default_neg, int diff_d, int min);
 
 int main(int argc, const char * argv[])
 {
     int mat_size = 40;
     Matrix mat;
     Cycle cycle;
+
     if (argc == 1)
     {
         readMatrix(mat, mat_size);
         cycle = greedIt(mat);
-        cycle = twoOpt(mat, cycle);
+        cycle = twoOptAllowNeg(mat, cycle, 6, 300, 9000);
+        cycle = twoOptAllowNeg(mat, cycle, 3, 250, 8027);
     }
     else if (argc == 2)
     {
@@ -114,24 +117,45 @@ Cycle swapCities(const Cycle &cycle, const int &a, const int &b)
     return n_cycle;
 }
 
-Cycle twoOpt(const Matrix &mat, Cycle cycle)
+Cycle twoOptAllowNeg(const Matrix &mat, Cycle cycle, int default_neg, int diff_d, int min)
 {
     size_t cycle_size = cycle.size();
     int improve = 0;
-    while (improve < cycle_size - 1)
+    bool distance_treshold = false;
+
+    while (improve < 10)
     {
+        int neg_imp = default_neg;
         int best_distance = countCycle(mat, cycle);
 
         for (int i = 1; i < cycle_size - 1;  i++)
         {
-            for (int j = i + 1; j < cycle_size - 1; j++) {
+            for (int j = i + 1; j < cycle_size - 1; j++)
+            {
                 Cycle new_cycle = swapCities(cycle, i, j);
                 int new_distance = countCycle(mat, new_cycle);
-                if (new_distance < best_distance)
+                int diff_distance = new_distance - best_distance;
+                if (distance_treshold)
                 {
-                    improve = 0;
-                    cycle = new_cycle;
-                    best_distance = new_distance;
+                    if ((new_distance < min) && (new_distance < best_distance))
+                    {
+                        improve = 0;
+                        neg_imp--;
+                        cycle = new_cycle;
+                        best_distance = new_distance;
+                    }
+                }
+                else
+                {
+                    if (new_distance < best_distance || (diff_distance < diff_d && neg_imp > 0))
+                    {
+                        improve = 0;
+                        neg_imp--;
+                        cycle = new_cycle;
+                        best_distance = new_distance;
+                        if (new_distance < min) distance_treshold = true;
+                    }
+
                 }
             }
         }
@@ -157,6 +181,7 @@ int countCycle(const Matrix &mat, Cycle cycle)
         if (it != cycle.begin())
             cycle_mat += mat[*it][*prev(it)];
     }
+
     return cycle_mat;
 }
 
