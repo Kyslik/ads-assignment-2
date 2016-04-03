@@ -20,36 +20,94 @@ const string MATRIX_FILE = "input.txt";
 
 typedef vector<vector<unsigned short>> Matrix;
 typedef vector<unsigned short> *oneDMat;
+typedef list<int> Cycle;
 
 inline bool fileExists (const string& file_name);
 bool readMatrix(Matrix &m, const short size, const string &file_name = MATRIX_FILE);
 void subMatrix(oneDMat submat, const Matrix &mat);
-list<int> minC(oneDMat submat, const Matrix &mat);
+Cycle minC(oneDMat submat, const Matrix &mat);
+Cycle greedIt(const Matrix &mat);
+void displayCycle(const Matrix &mat, Cycle cycle);
+int countCycle(const Matrix &mat, Cycle cycle);
 
 int main(int argc, const char * argv[])
 {
-    if (argc != 2) return -1;
-    int mat_size = atoi(argv[1]);
+    int mat_size = 40;
     Matrix mat;
-    oneDMat submat;
-    readMatrix(mat, mat_size);
-    
+    Cycle cycle;
+    if (argc == 1)
+    {
+        readMatrix(mat, mat_size);
+        cycle = greedIt(mat);
+    }
+    else if (argc == 2)
+    {
+        mat_size = atoi(argv[1]);
+        if (mat_size > 30 || 0 >= mat_size)
+        {
+            return -1;
+        }
+        oneDMat submat;
+
+        readMatrix(mat, mat_size);
+        submat = new vector<unsigned short>((1 << mat_size) * mat_size, SHRT_MAX);
+        subMatrix(submat, mat);
+
+        cycle = minC(submat, mat);
+    }
+    else
+        return -1;
+
+    displayCycle(mat, cycle);
+    cout << countCycle(mat, cycle) << endl;
+
+    return 0;
+}
+
+Cycle greedIt(const Matrix &mat)
+{
     size_t n = mat.size();
-    submat = new vector<unsigned short>((1 << n) * n, SHRT_MAX);
-    subMatrix(submat, mat);
-    list<int> cycle;
-    unsigned short cycle_mat = 0;
-    cycle = minC(submat, mat);
+    Cycle cycle;
+    vector<bool> visited(n, false);
 
-    list<int>::const_iterator it;
+    visited[0] = true;
+    int i = 0;
+    while (cycle.size() != n)
+    {
+        int best_j = 0;
+        int best_val = INT32_MAX;
+        for (int j = 0; j < n; j++) {
+            if (visited[j] || best_val < mat[i][j]) continue;
+            best_j = j;
+            best_val = mat[i][j];
+        }
+        cycle.push_back(best_j);
+        visited[best_j] = true;
+        i = best_j;
+    }
 
-    for (it = cycle.begin(); it != cycle.end(); ++it) {
+    cycle.push_front(0);
+    return cycle;
+}
+
+void displayCycle(const Matrix &mat, Cycle cycle)
+{
+    Cycle::const_iterator it;
+
+    for (it = cycle.begin(); it != cycle.end(); ++it)
         cout << *it + 1 << endl;
+}
+
+int countCycle(const Matrix &mat, Cycle cycle)
+{
+    Cycle::const_iterator it;
+    int cycle_mat = 0;
+    for (it = cycle.begin(); it != cycle.end(); ++it)
+    {
         if (it != cycle.begin())
             cycle_mat += mat[*it][*prev(it)];
     }
-    cout << cycle_mat << endl;
-    return 0;
+    return cycle_mat;
 }
 
 void subMatrix(oneDMat submat, const Matrix &mat)
@@ -69,16 +127,16 @@ void subMatrix(oneDMat submat, const Matrix &mat)
             for (int i = 0; i < n; i++)
             {
                 if (s & (1 << i) && i != j && (*submat)[t * n + i] < SHRT_MAX)
-                    (*submat)[s * n + j] = min((*submat)[s * n +j], (unsigned short) ((*submat)[t * n + i] + mat[i][j]));
+                    (*submat)[s * n + j] = min((*submat)[s * n + j], (unsigned short) ((*submat)[t * n + i] + mat[i][j]));
             }
         }
     }
 }
 
-list<int> minC(oneDMat submat, const Matrix &mat)
+Cycle minC(oneDMat submat, const Matrix &mat)
 {
-    list<int> cycle(1, 0);
-    int n = (int) mat.size();
+    Cycle cycle(1, 0);
+    size_t n = mat.size();
     size_t nset = 1 << n;
     vector<bool> visited(n, false);
 
