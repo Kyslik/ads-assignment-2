@@ -27,6 +27,8 @@ bool readMatrix(Matrix &m, const short size, const string &file_name = MATRIX_FI
 void subMatrix(oneDMat submat, const Matrix &mat);
 Cycle minC(oneDMat submat, const Matrix &mat);
 Cycle greedIt(const Matrix &mat);
+Cycle swapCities(const Cycle &cycle, const int &a, const int &b);
+Cycle twoOpt(const Matrix &mat, Cycle cycle);
 void displayCycle(const Matrix &mat, Cycle cycle);
 int countCycle(const Matrix &mat, Cycle cycle);
 
@@ -39,14 +41,13 @@ int main(int argc, const char * argv[])
     {
         readMatrix(mat, mat_size);
         cycle = greedIt(mat);
+        cycle = twoOpt(mat, cycle);
     }
     else if (argc == 2)
     {
         mat_size = atoi(argv[1]);
-        if (mat_size > 30 || 0 >= mat_size)
-        {
-            return -1;
-        }
+        if (mat_size > 30 || 0 >= mat_size) return -1;
+
         oneDMat submat;
 
         readMatrix(mat, mat_size);
@@ -72,6 +73,7 @@ Cycle greedIt(const Matrix &mat)
 
     visited[0] = true;
     int i = 0;
+
     while (cycle.size() != n)
     {
         int best_j = 0;
@@ -87,6 +89,54 @@ Cycle greedIt(const Matrix &mat)
     }
 
     cycle.push_front(0);
+    return cycle;
+}
+
+Cycle swapCities(const Cycle &cycle, const int &a, const int &b)
+{
+    Cycle n_cycle;
+    size_t cycle_size = cycle.size();
+    Cycle::const_iterator it;
+    vector<int> vcycle;
+
+    for (const auto &c : cycle)
+        vcycle.push_back(c);
+
+    for ( int c = 0; c <= a - 1; ++c )
+        n_cycle.push_back(vcycle[c]);
+
+    for (int c = a, dec = 0; c <= b; ++c, dec++)
+        n_cycle.push_back(vcycle[b - dec]);
+
+    for ( int c = b + 1; c < cycle_size; ++c )
+        n_cycle.push_back(vcycle[c]);
+
+    return n_cycle;
+}
+
+Cycle twoOpt(const Matrix &mat, Cycle cycle)
+{
+    size_t cycle_size = cycle.size();
+    int improve = 0;
+    while (improve < cycle_size - 1)
+    {
+        int best_distance = countCycle(mat, cycle);
+
+        for (int i = 1; i < cycle_size - 1;  i++)
+        {
+            for (int j = i + 1; j < cycle_size - 1; j++) {
+                Cycle new_cycle = swapCities(cycle, i, j);
+                int new_distance = countCycle(mat, new_cycle);
+                if (new_distance < best_distance)
+                {
+                    improve = 0;
+                    cycle = new_cycle;
+                    best_distance = new_distance;
+                }
+            }
+        }
+        improve++;
+    }
     return cycle;
 }
 
